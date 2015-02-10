@@ -24,11 +24,26 @@ Finally, I chose arbitrary key assignments for most keys since most modern games
 
 #Testing Methodology
 
-For testing, I 
+For testing, I first tested all of the standard digital buttons to make sure they printed their respective letters. If first found that they would only print the letter once even when held down. This was because I used the wrong arduino function, I changed the buttons to use the press function instead and they worked from then on.
+
+I tested the analog to digital buttons by simply going through every combination of keys and making sure all 6 could be pressed in any combination. I tested this by outputting the raw button state rather than the key values since unless all the keys are pressed at precisely the same time, windows will only repeatedly print the latest pressed character. After all of these worked, I went back through and tested that each individual one worked as its designated key.
+
+I then tested the analog sticks to make sure the thresholding and the range was working. I did this by printing the x and y mouse movement over serial. All of this seemed to work as expected. 
+
+Next I tested toggling between d-pad and control, since this worked, I could start testing the control pad. I increased and decreased the sensitivity and wrote it to serial. I also moved the stick around to make sure it felt ok. I found that I initially had too low resolution on the sensitivity toggle, and that at the lower sensitivity ranges, the threshold would stop working and the mouse would drift. I fixed the former by changing the intensity of each level of the sensitivity and the latter by simply putting a min value on the threshold.
+
+The acceleration was tested purely for feel and bugs. Ultimately, acceleration should not be used in games so it was more important that the acceleration feels good for general computer use. I first had tried to make the acceleration work well for games by having it rapidly accelerate with rapid movements and then decelerate automatically after a a couple cycles. This worked ok in games allowing for fast movements which would then slow down and become accurate (perfect for FPSs where readjusting aim requires a burst of speed followed by a period of high accuracy). However this did not translate at all to general browsing. It felt aweful to use in anything other than an FPS game so I removed and and implemented the reverse as described above. This feels less good in "twitch" based games, but such games are typically played with a mouse anyways so I felt optimizing for such games was a waste.
+
+After all of the features checked out, I played a few games to see if it felt good. I mostly tested the controller with Dark Souls since that is the primary reason I use a controller on PC. I found that the controller performed extremly well under all circumstances except one: the keys weren't buffered. This meant that if the dodge button was pressed for a split second and that action did not get evaluated when it was pressed, the character would not dodge. This is a critical flaw in the controller that is currently unsolved. For most actions, this problem is not prevelent since the button is held down for a considerable amount of time, it is only with certain "twitch" actions such as dodging that the problem presents itself.
 
 #Results and Discussion
-Left stick - PWM?
+
+After all of the features checked out, I played a few games to see if it felt good. I mostly tested the controller with Dark Souls since that is the primary reason I use a controller on PC. I found that the controller performed extremly well under all circumstances except one: the keys weren't buffered. This meant that if the dodge button was pressed for a split second and that action did not get evaluated when it was pressed, the character would not dodge. This is a critical flaw in the controller that is currently unsolved. For most actions, this problem is not prevelent since the button is held down for a considerable amount of time, it is only with certain "twitch" actions such as dodging that the problem presents itself.
+
+Another issue with this design is that the left analog stick is mapped to digital inputs. This does not allow analog movement in games even though the user is using analog inputs making it feel very awkward in games. One possible solution would be to output a PWM of the key where the analog value of the joystick would control the duty cycle. In certain games (such as racing games) this would work great since the key is converted to a throttle in the game engine and the throttle amount would simply change. In other games that tend to model realistic movementsm, this would cause big problems since the engine would attempt to start and stop the character repeatedly. I currently have not implemented this solution, so I do not know how well it would actually perform.
 
 #Conclusions
 
+The controller behaves like a standard third party controller for PC. It works in games fine, feeling somewhere between using a keyboard and mouse and a controller. The biggest giveaway that the firmware is bound to a keyboard is that the movement is still digital, which in some games is instantly recognizable. 
 
+I spend about 45 minutes doing the initial coding for the lab and then another hour and a half fine tuning the acceleration and sensitivity.
